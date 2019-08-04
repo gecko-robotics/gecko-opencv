@@ -20,6 +20,24 @@ message(STATUS " ${OSN}: ${OS_VERSION}")
 message(STATUS " ${PROC}")
 message(STATUS "-------------------------------------")
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /home/kevin/.local/lib/cmake/opencv4)
+set(OpenCV_DIR /home/kevin/.local/lib/cmake/opencv4)
+
+find_package(PkgConfig)
+
+find_package(OpenCV REQUIRED)
+if(OpenCV_FOUND)
+    message(STATUS ">> OpenCV found: ${OpenCV_VERSION}")
+    list(APPEND ALL_LIBS ${OpenCV_LIBS})
+else()
+    message(WARNING "*** Could not find OpenCV ***")
+endif()
+
+link_directories(
+    ../gecko/build/
+    ../gecko/build/extlibs/marko
+)
+
 add_executable(camera src/camera.cpp)
 target_include_directories(camera
     PUBLIC
@@ -28,4 +46,5 @@ target_include_directories(camera
 target_link_libraries(camera
     PUBLIC
         gecko
+        ${OpenCV_LIBS}
 )
