@@ -20,31 +20,65 @@ message(STATUS " ${OSN}: ${OS_VERSION}")
 message(STATUS " ${PROC}")
 message(STATUS "-------------------------------------")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /home/kevin/.local/lib/cmake/opencv4)
-set(OpenCV_DIR /home/kevin/.local/lib/cmake/opencv4)
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} /home/kevin/.local/lib/cmake/opencv4)
+
 
 find_package(PkgConfig)
+
+# OpenCV --------------------------------------------------------------
+if(NOT APPLE)
+    set(OpenCV_DIR /home/kevin/.local/lib/cmake/opencv4)
+    set(MessagePack_DIR /home/kevin/.local/lib/cmake/msgpack)
+endif()
 
 find_package(OpenCV REQUIRED)
 if(OpenCV_FOUND)
     message(STATUS ">> OpenCV found: ${OpenCV_VERSION}")
-    list(APPEND ALL_LIBS ${OpenCV_LIBS})
 else()
     message(WARNING "*** Could not find OpenCV ***")
 endif()
 
-link_directories(
-    ../gecko/build/
-    ../gecko/build/extlibs/marko
+# ZeroMQ -------------------------------------------------------------
+pkg_check_modules(libzmq REQUIRED libzmq)
+if(libzmq_FOUND)
+    message(STATUS ">> ZeroMQ found: ${libzmq_VERSION}")
+    # option(ZMQ_BUILD_DRAFT_API " " OFF)
+else()
+    message(WARNING "*** Could not find ZeroMQ ***")
+endif()
+
+# Source ----------------------------------------------------------------
+list(APPEND sources
+    src/camera.cpp
+    src/sub.cpp
 )
 
-add_executable(camera src/camera.cpp)
-target_include_directories(camera
-    PUBLIC
-        ../gecko/src
-)
-target_link_libraries(camera
-    PUBLIC
-        gecko
-        ${OpenCV_LIBS}
-)
+foreach(src ${sources})
+    get_filename_component(name ${src} NAME_WE)
+    message(STATUS " -> ${name}")
+
+    add_executable(${name} ${src})
+    target_include_directories(${name}
+        PUBLIC
+            ${libzmq_INCLUDE_DIRS}
+            src
+            ../gecko/src
+            ../gecko/extlibs/gecko-msgpack
+            ../gecko/extlibs/cppzmq
+            ../gecko/extlibs/marko/lib/include
+            ../gecko/extlibs/nlohmann-json/include
+            /usr/local/include
+    )
+    target_link_libraries(${name}
+        PUBLIC
+            gecko
+            ${OpenCV_LIBS}
+            ${libzmq_LIBRARIES}
+    )
+    target_link_directories(${name}
+        PUBLIC
+            ../gecko/build/
+            # ../gecko/build/extlibs/marko
+            /usr/local/lib
+    )
+endforeach()
