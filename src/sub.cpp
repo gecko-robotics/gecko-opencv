@@ -22,18 +22,18 @@ int main(){
     s.connect(tcp);
 
     while(gecko::ok()){
-        zmq::message_t msg = s.recv_nb();
+        zmq::message_t msg = s.recv();
 
         if (msg.size() == 0) {
             cout << "Error: no image captured" << endl;
-            gecko::msleep(500);
+            gecko::msleep(50);
         }
         else {
             b_t b(msg);
             Mat src = b.get();
 
             imshow( "test", src );
-            char c = (char) waitKey(100);
+            char c = (char) waitKey(10);
             if (c == 27) break;  // hit esc to quit
             else if (c == 'q') break;
         }

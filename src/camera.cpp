@@ -46,6 +46,7 @@ int main(){
             // if (c == 27) break;  // hit esc to quit
         }
         rate.sleep();
+        // cout << "publish" << endl;
     }
 
     cam.release();
