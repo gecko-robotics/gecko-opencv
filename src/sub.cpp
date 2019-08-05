@@ -11,7 +11,7 @@ using namespace std;
 
 int main(){
     gecko::init();
-    
+
     namedWindow( "test", WINDOW_AUTOSIZE );
 
     string uds = zmqUDS("/tmp/opencv_uds");
@@ -33,6 +33,7 @@ int main(){
             imshow( "test", src );
             char c = (char) waitKey(100);
             if (c == 27) break;  // hit esc to quit
+            else if (c == 'q') break;
         }
     }
 

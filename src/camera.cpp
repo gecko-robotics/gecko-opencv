@@ -16,7 +16,7 @@ int main(){
     cam.open(0);
     cam.set(CAP_PROP_FRAME_WIDTH, 640);
     cam.set(CAP_PROP_FRAME_HEIGHT, 480);
-    namedWindow( "test", WINDOW_AUTOSIZE );
+    // namedWindow( "test", WINDOW_AUTOSIZE );
 
     string uds = zmqUDS("/tmp/opencv_uds");
 
