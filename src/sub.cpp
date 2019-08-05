@@ -14,17 +14,19 @@ int main(){
 
     namedWindow( "test", WINDOW_AUTOSIZE );
 
-    string uds = zmqUDS("/tmp/opencv_uds");
+    // string uds = zmqUDS("/tmp/opencv_uds");
+    HostInfo hi;
+    string tcp = zmqTCP(hi.address, 9000);
 
     Subscriber s;
-    s.connect(uds);
+    s.connect(tcp);
 
     while(gecko::ok()){
         zmq::message_t msg = s.recv_nb();
 
         if (msg.size() == 0) {
             cout << "Error: no image captured" << endl;
-            gecko::msleep(100);
+            gecko::msleep(500);
         }
         else {
             b_t b(msg);

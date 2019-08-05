@@ -18,10 +18,15 @@ int main(){
     cam.set(CAP_PROP_FRAME_HEIGHT, 480);
     // namedWindow( "test", WINDOW_AUTOSIZE );
 
-    string uds = zmqUDS("/tmp/opencv_uds");
+    // string uds = zmqUDS("/tmp/opencv_uds");
+
+    HostInfo hi;
+    string tcp = zmqTCP(hi.address, 9000);
 
     Publisher p;
-    p.bind(uds);
+    p.bind(tcp);
+
+    Rate rate(20);
 
     while(gecko::ok()){
         cam >> src;
@@ -40,6 +45,7 @@ int main(){
             // char c = (char) waitKey(100);
             // if (c == 27) break;  // hit esc to quit
         }
+        rate.sleep();
     }
 
     cam.release();
